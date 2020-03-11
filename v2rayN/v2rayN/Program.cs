@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 using v2rayN.Forms;
 using v2rayN.Properties;
@@ -28,20 +29,21 @@ namespace v2rayN
             Application.ThreadException += new System.Threading.ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-         
+
             //AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 
+            Thread.Sleep(300); // 尽量避免切换语言后提示“已经运行”
             Process instance = RunningInstance();
             if (instance == null)
-            {                
+            {
                 if (!UnzipLibs())
                 {
                     UI.Show($"Error preparing the environment(准备运行环境出错)");
                     return;
                 }
 
-                Utils.SaveLog("v2rayN start up");
-                
+                Utils.SaveLog("v2rayN start up " + Utils.GetVersion());
+
                 //设置语言环境
                 string lang = Utils.RegReadValue(Global.MyRegPath, Global.MyRegKeyLanguage, "zh-Hans");
                 System.Threading.Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(lang);
